@@ -432,3 +432,18 @@ class RoleAuthentication(object):
             except AttributeError:
                 pass
         return result
+
+
+class CreateViewMixin(object):
+    template_name = 'arctic/base_create_update.html'
+    success_message = _('%(object)s was created successfully')
+
+    def get_page_title(self):
+        if not self.page_title:
+            return _("Create %s") % self.model._meta.verbose_name
+        return self.page_title
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateViewMixin, self).get_context_data(**kwargs)
+        context['layout'] = self.get_layout()
+        return context

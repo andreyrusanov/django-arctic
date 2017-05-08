@@ -17,10 +17,11 @@ from django.utils.translation import (get_language, ugettext as _)
 from django.views import generic as base
 
 import extra_views
+from extra_views import CreateWithInlinesView
 
 from .filters import filterset_factory
 from .mixins import (LinksMixin, RoleAuthentication, SuccessMessageMixin,
-                     LayoutMixin)
+                     LayoutMixin, CreateViewMixin)
 from .utils import (find_attribute, get_field_class, find_field_meta,
                     get_attribute, menu, view_from_url)
 
@@ -579,19 +580,8 @@ class ListView(View, base.ListView):
         return context
 
 
-class CreateView(View, SuccessMessageMixin, LayoutMixin, base.CreateView):
-    template_name = 'arctic/base_create_update.html'
-    success_message = _('%(object)s was created successfully')
-
-    def get_page_title(self):
-        if not self.page_title:
-            return _("Create %s") % self.model._meta.verbose_name
-        return self.page_title
-
-    def get_context_data(self, **kwargs):
-        context = super(CreateView, self).get_context_data(**kwargs)
-        context['layout'] = self.get_layout()
-        return context
+class CreateView(View, SuccessMessageMixin, LayoutMixin, CreateViewMixin, base.CreateView):
+    pass
 
 
 class UpdateView(SuccessMessageMixin, LayoutMixin, View, LinksMixin,
@@ -683,3 +673,7 @@ class LoginView(TemplateView):
 
         return render(request, self.template_name,
                       self.get_context_data(**kwargs))
+
+
+class CreateViewWithInline(View, SuccessMessageMixin, LayoutMixin, CreateViewMixin, CreateWithInlinesView):
+    pass
